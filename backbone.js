@@ -609,18 +609,20 @@
       // Turn bare objects into model references, and prevent invalid models
       // from being added.
       for (i = 0, l = models.length; i < l; i++) {
-        if (!(model = this._prepareModel(attrs = models[i], options))) {
-          this.trigger('invalid', this, attrs, options);
-          continue;
-        }
+        attrs = models[i];
 
         // If a duplicate is found, prevent it from being added and
         // optionally merge it into the existing model.
-        if (existing = this.get(model)) {
+        if (existing = this.get(attrs)) {
           if (options.merge) {
-            existing.set(attrs === model ? model.attributes : attrs, options);
+            existing.set(attrs instanceof Model ? attrs.attributes : attrs, options);
             if (sort && !doSort && existing.hasChanged(sortAttr)) doSort = true;
           }
+          continue;
+        }
+
+        if (!(model = this._prepareModel(attrs, options))) {
+          // Attributes did not pass validation
           continue;
         }
 
