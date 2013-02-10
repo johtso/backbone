@@ -184,6 +184,20 @@ $(document).ready(function() {
     equal(col.first().get('name'), 'Tim');
   });
 
+  test("no new models created when model already exists", 1, function() {
+    function cidCount (col) {
+      return parseInt(col.last().cid.slice(1), 10);
+    }
+
+    var col = new Backbone.Collection({id: 1, name: 'Moe'});
+    var countA = cidCount(col);
+    col.add({id: 1, name: 'Moses'}, {merge: true});
+    col.add({id: 1, name: 'Moses'}); // Should do nothing.
+    col.add({id: 2, name: 'Curly'});
+    var countB = cidCount(col);
+    equal(countB, countA + 1);
+  });
+
   test("add model to multiple collections", 10, function() {
     var counter = 0;
     var e = new Backbone.Model({id: 10, label : 'e'});
